@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.darothub.theweatherapp.R
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,7 +52,11 @@ fun View.hide() {
     visibility = View.GONE
 }
 
-
+fun Double.roundOff(): String {
+    val df = DecimalFormat("#.##")
+    df.roundingMode = RoundingMode.DOWN
+   return df.format(this)
+}
 fun convertTempToScientificReading(tempInCelsius: Double): SpannableString {
     var str = "$tempInCelsius" + "oC"
     val indexOfO = str.indexOf('o')

@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.ForecastDayDao
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.HourDao
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.WeatherDao
+import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.ForecastDayAndHourCrossRef
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.ForecastDayEntity
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.WeatherEntity
@@ -14,7 +15,8 @@ import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Weath
 @Database(
     entities = [
         WeatherEntity::class,
-        ForecastDayEntity::class, HourEntity::class],
+        ForecastDayEntity::class, HourEntity::class,
+        ForecastDayAndHourCrossRef::class],
     version = 1,
     exportSchema = false
 )

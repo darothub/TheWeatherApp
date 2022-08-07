@@ -3,34 +3,38 @@ package com.darothub.theweatherapp.com.darothub.theweatherapp.weather.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.CurrentWeatherAndForecast
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.UIState
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.repository.WeatherRepositoryImpl
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 class WeatherViewModel(
-    val weatherRepositoryImpl: WeatherRepositoryImpl
+    private val weatherRepositoryImpl: WeatherRepositoryImpl
 ) : ViewModel() {
     private val _currentWeatherFlow = MutableStateFlow<UIState>(UIState.Nothing)
     val currentWeatherFlow = _currentWeatherFlow.asStateFlow()
+    private val _forecastFlow = MutableStateFlow<UIState>(UIState.Nothing)
+    val forecastFlow = _forecastFlow.asStateFlow()
 
-    fun getCurrentWeather(key:String, q: String, days:Int) {
+    suspend fun getCurrentWeather(key:String, lat: String, long: String, days:Int) {
         _currentWeatherFlow.value = UIState.Loading
-        val response = weatherRepositoryImpl.getCurrentWeather(q)
-        response.map {
-           if (it.isEmpty()) {
-              try {
-                  weatherRepositoryImpl.getCurrentWeatherFromApi(key, q, days)
-              } catch (e:Exception){
-                  _currentWeatherFlow.value = UIState.Error(e)
-                  Log.e("ViewModel", e.localizedMessage)
-              }
-           }
-            _currentWeatherFlow.value = UIState.Success(it)
+        val currentWeatherList = weatherRepositoryImpl.getCurrentWeather(lat, long)
 
-        }.launchIn(viewModelScope)
+        currentWeatherList.map{ current->
+            Log.d("ViewModel", "$current")
+            if (current.isEmpty()) {
+                try {
+                    Log.d("ViewModel", "Call")
+                    weatherRepositoryImpl.fetchRemoteCurrentWeather(key, "$lat,$long", days)
+                } catch (e:Exception){
+                    Log.e("ViewModel", e.localizedMessage)
+                    _currentWeatherFlow.value = UIState.Error(e)
+                }
+            }
+
+            _currentWeatherFlow.value = UIState.Success(current)
+
+        }.stateIn(viewModelScope)
+
     }
+
 }

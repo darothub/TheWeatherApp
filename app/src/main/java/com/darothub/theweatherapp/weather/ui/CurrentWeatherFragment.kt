@@ -23,9 +23,10 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.darothub.theweatherapp.Keys
 import com.darothub.theweatherapp.R
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.CurrentWeatherWithForeCast
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.WeatherEntity
+import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.*
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.UIState
+import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.ForecastDayResponse
+import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.WeatherResponse
 import com.darothub.theweatherapp.com.darothub.theweatherapp.main.MainApplication
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.viewmodel.WeatherViewModel
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.viewmodel.WeatherViewModelFactory
@@ -35,8 +36,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.*
+import kotlin.coroutines.resume
 
 
 const val DENIED = 0
@@ -49,7 +52,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
     lateinit var locationObserver: LocationObserver
     lateinit var alertDialogListener: DialogInterface.OnClickListener
     val viewModel by viewModels<WeatherViewModel> { WeatherViewModelFactory(MainApplication.createWeatherRepository()) }
-
+    lateinit var adapter: ViewPagerAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,6 +62,11 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         locationObserver = LocationObserver(mFusedLocationClient)
         checkLocationPermission()
         collectCurrentWeatherDetails()
+        collectForecast()
+        binding.swipeLayout.setOnRefreshListener {
+            getWeatherResult()
+            binding.swipeLayout.isRefreshing = false
+        }
     }
 
     private fun collectCurrentWeatherDetails() {
@@ -69,14 +77,35 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
                         loading()
                     }
                     is UIState.Success<*> -> {
-                        onSuccess(state.data)
+                        onCurrentWeather(state.data)
                     }
                     is UIState.Error -> {
                         onError(state.exception.message)
                     }
+                    else -> {}
                 }
             }
         }
+    }
+
+    private fun collectForecast() {
+//        lifecycleScope.launchWhenResumed {
+//            viewModel.forecastFlow.collect { state ->
+//                when (state) {
+//                    is UIState.Loading -> {
+//                        loading()
+//                    }
+//                    is UIState.Success<*> -> {
+//                        Log.d("Forecast", "${state.data}")
+//                        onForecast(state.data)
+//                    }
+//                    is UIState.Error -> {
+//                        onError(state.exception.message)
+//                    }
+//                    else -> {}
+//                }
+//            }
+//        }
     }
 
     private fun checkLocationPermission() {
@@ -98,13 +127,19 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
             }
             else -> {
                 Log.d("Main", "granted")
-                lifecycle.addObserver(locationObserver)
-                lifecycleScope.launchWhenResumed {
-//                    val local = getCurrentLocation()
-                    viewModel.getCurrentWeather(Keys.apiKey(), getUserCurrentLocation(), 3)
-//                    Log.d("Main", "Location: $local")
+                getWeatherResult()
+            }
+        }
+    }
 
-                }
+    private fun getWeatherResult() {
+        lifecycle.addObserver(locationObserver)
+        lifecycleScope.launchWhenResumed {
+            val region = getUserCurrentLocation()
+            region?.let {
+                val lat = it.latitude.roundOff()
+                val long = it.longitude.roundOff()
+                viewModel.getCurrentWeather(Keys.apiKey(), lat, long, 3)
             }
         }
     }
@@ -139,10 +174,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
             }
             else -> {
                 Log.d("Main", "Permissions accepted")
-                lifecycle.addObserver(locationObserver)
-                lifecycleScope.launchWhenResumed {
-                    viewModel.getCurrentWeather(Keys.apiKey(), getUserCurrentLocation(), 3)
-                }
+                getWeatherResult()
             }
         }
     }
@@ -153,7 +185,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         startActivity(callGPSSettingIntent)
     }
     @SuppressLint("MissingPermission")
-    suspend fun getUserCurrentLocation(): String {
+    suspend fun getUserCurrentLocationObject(): String? {
         val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         val cancellationTokenSource = CancellationTokenSource().token
         return suspendCancellableCoroutine { cont ->
@@ -167,8 +199,23 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
             }
         }
     }
+    @SuppressLint("MissingPermission")
+    suspend fun getUserCurrentLocation(): Location? {
+        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        val cancellationTokenSource = CancellationTokenSource().token
+        return suspendCancellableCoroutine { cont ->
+            mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource).addOnSuccessListener { location ->
+                Log.d("Main", "lat $location")
+                if (location != null) {
+                    val locality = getAddressFromLatLng(location)
+                    Log.d("Main2", "lat $location")
+                    cont.resume(location)
+                }
+            }
+        }
+    }
 
-    private fun getAddressFromLatLng(location: Location): String {
+    private fun getAddressFromLatLng(location: Location): String? {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         val result = try {
             val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
@@ -178,25 +225,34 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
                 Log.d("ADDRESS", "$singleAddress $locality")
                 singleAddress.locality
             } else {
-                "null"
+                null
             }
         } catch (e: Exception) {
             Log.e("Address", e.message.toString())
             onError(e.message)
+            return null
         }
         return result.toString()
     }
 
-    override fun <T> onSuccess(data: T) {
+    override fun <T> onCurrentWeather(data: T) {
         super.onSuccess(data)
         val response = data as? List<WeatherEntity>
         if (response?.isNotEmpty() == true){
-            val wr = response?.get(0)
-            val tempInCelsius = wr?.current?.tempC
+            val wr = response[0]
+            val tempInCelsius = wr.current.tempC
             val s = convertTempToScientificReading(tempInCelsius ?: 0.0)
             setTopViewData(wr, s)
         }
         Log.d("Success", "$response")
+    }
+
+    override fun <T> onForecast(data: T) {
+        super.onForecast(data)
+        val forecast = data as? List<ForecastDayResponse>
+        if (forecast != null) {
+            setUpViewPager(forecast)
+        }
     }
     @SuppressLint("SetTextI18n")
     private fun setTopViewData(
@@ -204,12 +260,11 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         s: SpannableString
     ) {
         binding.main.apply {
-            locationNameTv.text = getString(R.string.location, wr.location.name, wr.location.country)
+            locationNameTv.text = getString(R.string.location, wr.location.region, wr.location.country)
             val desc = wr.current.condition.text
             temp.text = s
             description.text = desc
             val icon = "https:" + wr.current.condition.icon
-            Log.d("ICON", icon)
             binding.main.weatherImage.load(icon)
             wind.text = "Wind: ${wr.current.windMph}m/s"
             pressure.text = "Pressure: ${wr.current.pressureIn}hPa"
@@ -218,5 +273,31 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
             val lastUpdated = convertLongToTime(wr.current.lastUpdatedEpoch)
             updateDateTv.text = "Last update: $lastUpdated"
         }
+    }
+    private fun setUpViewPager(data: List<ForecastDayResponse>) {
+        val map = data.groupBy { it.forecastId }
+        adapter = ViewPagerAdapter(requireActivity(), 3) { position ->
+
+            when (position) {
+                0 -> {
+                    ForecastFragment.newInstance(map[0])
+                }
+                1 -> {
+                    ForecastFragment.newInstance(map[1])
+                }
+                else -> {
+                    ForecastFragment.newInstance(map[2])
+                }
+            }
+        }
+
+        binding.vp.adapter = adapter
+        TabLayoutMediator(binding.mainTabLayout, binding.vp) { tab, position ->
+            when (position) {
+                0 -> tab.text = "Today"
+                1 -> tab.text = "Tomorrow"
+                2 -> tab.text = "Later"
+            }
+        }.attach()
     }
 }

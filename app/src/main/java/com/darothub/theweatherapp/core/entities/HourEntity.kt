@@ -11,7 +11,7 @@ import java.io.Serializable
 @Entity
 data class HourEntity(
     @PrimaryKey(autoGenerate = true)
-    val hourId: Long,
+    val hourId: Long = 0,
     @SerializedName("time_epoch")
     val timeEpoch: Long,
     @SerializedName("temp_c")

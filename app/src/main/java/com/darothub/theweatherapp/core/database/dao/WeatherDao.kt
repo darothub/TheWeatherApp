@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherDao: BaseDao<WeatherEntity> {
-    @Query("SELECT * FROM weatherentity WHERE name =:q")
-    fun getCurrentWeather(q:String) : Flow<List<WeatherEntity>>
+    @Query("SELECT * FROM weatherentity WHERE lat =:lat AND lon =:longitude")
+    fun getCurrentWeather(lat: String, longitude: String) : Flow<List<WeatherEntity>>
     @Transaction
     @Query("SELECT * FROM weatherentity WHERE name =:q")
     fun getCurrentWeatherAndForecast(q:String) : Flow<List<CurrentWeatherWithForeCast>>
+
 }

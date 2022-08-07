@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrentDao : BaseDao<CurrentWeatherEntity>{
-    @Query("SELECT * FROM currentweatherentity")
-    fun getCurrentWeather(): Flow<List<CurrentWeatherEntity>>
+//    @Query("SELECT * FROM currentweatherentity")
+//    fun getCurrentWeather(): Flow<List<CurrentWeatherEntity>>
 }

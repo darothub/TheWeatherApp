@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.darothub.theweatherapp"
-        minSdk 21
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -40,7 +40,6 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.navigation:navigation-fragment:2.5.1'
     def room_version = "2.4.3"
     def retrofit_version = "2.9.0"
     def testRunnerVersion = "1.4.0"
@@ -57,7 +56,10 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation 'com.google.android.gms:play-services-base:18.1.0'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
-
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    implementation "androidx.biometric:biometric:1.2.0-alpha04"
+    implementation 'androidx.navigation:navigation-fragment:2.5.1'
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
 
     implementation "io.coil-kt:coil:2.1.0"
     testImplementation 'junit:junit:4.13.2'

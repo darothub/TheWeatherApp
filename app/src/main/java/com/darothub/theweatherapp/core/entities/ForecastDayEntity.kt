@@ -5,8 +5,8 @@ import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Astro
 
 @Entity
 data class ForecastDayEntity(
-    @PrimaryKey(autoGenerate = true)
     val forecastId: Long = 0,
+    @PrimaryKey
     val date: String,
     @ColumnInfo(name = "location_name")
     val locationName: String,
@@ -15,16 +15,17 @@ data class ForecastDayEntity(
     val astro: Astro,
 )
 
-@Entity(primaryKeys = ["forecastId", "hourId"])
+
+@Entity(primaryKeys = ["dateEpoch", "hourId"])
 data class ForecastDayAndHourCrossRef(
-    val forecastId: Long,
+    val dateEpoch: Long,
     val hourId: Long
 )
 
 data class ForecastDayWithHours(
-    @Embedded val playlist: ForecastDayEntity,
+    @Embedded val forcastDay: ForecastDayEntity,
     @Relation(
-        parentColumn = "forecastId",
+        parentColumn = "dateEpoch",
         entityColumn = "hourId",
         associateBy = Junction(ForecastDayAndHourCrossRef::class)
     )

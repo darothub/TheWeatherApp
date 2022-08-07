@@ -21,19 +21,20 @@ class WeatherDataSource(
 ) {
     suspend fun insertForecastDay(response: WeatherResponse): List<ForecastDayEntity> {
         val entities = forecastMapper.toEntity(response)
-        entities.map {
-            forecastDaydao.insert(it)
-        }
+//        entities.map {
+//            forecastDaydao.insert(it)
+//        }
         return entities
     }
     suspend fun insertCurrent(currentWeather: WeatherResponse){
        val entity = weatherMapper.toEntity(currentWeather)
         weatherDao.insert(entity)
     }
+
     suspend fun insertHour(hourEntity: HourEntity){
         hourDao.insert(hourEntity)
     }
-    fun getCurrentWeather(q:String) = weatherDao.getCurrentWeather(q)
-    fun getCurrentAndForecast(q:String) = weatherDao.getCurrentWeatherAndForecast(q)
-
+    fun getCurrentWeather(lat: String, long: String) = weatherDao.getCurrentWeather(lat, long)
+    fun getCurrentForecast(q:String) = forecastDaydao.getForecast(q)
+    fun getForecastWithHours() = forecastDaydao.getForecastWithHours()
 }

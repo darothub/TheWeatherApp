@@ -6,11 +6,12 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.12604166666666666" />
         <entry key="app/src/main/res/layout/current_weather_layout.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/forecast_item_layout.xml" value="0.19610507246376813" />
-        <entry key="app/src/main/res/layout/fragment_authentication.xml" value="0.19610507246376813" />
+        <entry key="app/src/main/res/layout/fragment_authentication.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_current_weather.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/fragment_forecast.xml" value="0.19610507246376813" />
+        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/fragment_tab.xml" value="0.19610507246376813" />
-        <entry key="app/src/main/res/layout/state_layout.xml" value="0.19610507246376813" />
+        <entry key="app/src/main/res/layout/state_layout.xml" value="0.1" />
       </map>
     </option>
   </component>
