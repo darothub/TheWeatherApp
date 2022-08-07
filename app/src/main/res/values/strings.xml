@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TheWeatherApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dash">---</string>
+    <string name="location_permission">Location Permission</string>
+    <string name="open_setting_for_location"> You will not be able to access the location feature. "Kindly click on ok to open setting and enable location permission for this application.</string>
+    <string name="ask_again">Ask again</string>
+    <string name="ok">Ok</string>
+    <string name="welcome">Welcome!</string>
+    <string name="location">%1$s,\n%2$s</string>
+</resources>
