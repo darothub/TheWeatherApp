@@ -56,8 +56,8 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
             })
 
         promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login ")
-            .setSubtitle("Log in using your biometric credential")
+            .setTitle(getString(R.string.biometric_login))
+            .setSubtitle(getString(R.string.biometric_login_advice))
             .setNegativeButtonText("Use account password")
             .setAllowedAuthenticators(BIOMETRIC_STRONG)
             .build()
@@ -65,7 +65,7 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
         binding.inputLayout.setEndIconOnClickListener {
             val encrypted = sharedPrefHelper.retrieve()
             if (encrypted.isNullOrBlank()) {
-                onError("Login with your username")
+                onError(getString(R.string.first_user))
                 return@setEndIconOnClickListener
             }
             username = encrypted
@@ -89,11 +89,11 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
     private fun checkIfDeviceCanAuthenticate(biometricManager: BiometricManager):BiometricState =
         when (biometricManager.canAuthenticate(BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->{
-                onError("Your device has no biometric feature")
+                onError(getString(R.string.no_biometric_feature))
                 BiometricState.NoHardware
             }
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->{
-                onError("Biometric features are currently unavailable.")
+                onError(getString(R.string.biometric_not_available))
                 BiometricState.NotAvailable
             }
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {

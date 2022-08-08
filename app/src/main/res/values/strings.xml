@@ -21,4 +21,9 @@
     <string name="humidity">"Humidity: %1$s%"</string>
     <string name="biometric">Biometric</string>
     <string name="biometric_request_advice">You do not have biometric activated on this device. Kindly click ok to enrol</string>
+    <string name="first_user">First time user. Kindly login with your username</string>
+    <string name="biometric_login">Biometric login</string>
+    <string name="biometric_login_advice">Log in using your biometric credential</string>
+    <string name="no_biometric_feature">Your device has no biometric feature</string>
+    <string name="biometric_not_available">Biometric features are currently unavailable</string>
 </resources>
