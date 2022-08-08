@@ -22,4 +22,7 @@
 - Weather forecast information
 - Request to enrol for biometric (if not enrolled)
 
+### Proposed improvement
+- Test (UI/Unit/Integration)
+
 See images folder 
