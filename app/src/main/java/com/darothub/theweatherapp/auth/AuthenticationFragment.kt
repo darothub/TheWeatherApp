@@ -3,7 +3,6 @@ package com.darothub.theweatherapp.auth
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.biometric.BiometricManager
@@ -14,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.darothub.theweatherapp.R
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.utils.CreateEncryptedSharedPref
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.utils.SharedPreferenceHelper
-import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.ui.BaseFragment
+import com.darothub.theweatherapp.com.darothub.theweatherapp.main.BaseFragment
 import com.darothub.theweatherapp.core.utils.viewBinding
 import com.darothub.theweatherapp.databinding.FragmentAuthenticationBinding
 import java.util.concurrent.Executor

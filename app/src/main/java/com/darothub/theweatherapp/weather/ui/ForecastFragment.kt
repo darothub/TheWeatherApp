@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.darothub.theweatherapp.R
+import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Hour
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.ForecastDayResponse
 import com.darothub.theweatherapp.core.utils.viewBinding
@@ -21,7 +22,7 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.takeIf { it.containsKey(HOUR) }?.apply {
-            val list = getSerializable(HOUR) as List<HourEntity>
+            val list = getSerializable(HOUR) as List<Hour>
             recyclerViewAdapter = DataAdapter()
             recyclerViewAdapter.setData(list)
             binding.rcv.adapter = recyclerViewAdapter
@@ -32,10 +33,10 @@ class ForecastFragment : Fragment(R.layout.fragment_forecast) {
     }
     companion object {
         @JvmStatic
-        fun newInstance(param1: List<ForecastDayResponse>?) =
+        fun newInstance(param1: List<Hour>?) =
             ForecastFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(HOUR, param1 as ArrayList<HourEntity>)
+                    putSerializable(HOUR, param1 as ArrayList<Hour>)
                 }
             }
     }

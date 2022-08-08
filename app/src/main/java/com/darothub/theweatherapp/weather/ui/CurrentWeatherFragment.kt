@@ -3,7 +3,6 @@ package com.darothub.theweatherapp.com.darothub.theweatherapp.weather.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,9 +14,7 @@ import android.text.SpannableString
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
@@ -26,7 +23,7 @@ import com.darothub.theweatherapp.R
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.*
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.UIState
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.ForecastDayResponse
-import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.WeatherResponse
+import com.darothub.theweatherapp.com.darothub.theweatherapp.main.BaseFragment
 import com.darothub.theweatherapp.com.darothub.theweatherapp.main.MainApplication
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.viewmodel.WeatherViewModel
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.viewmodel.WeatherViewModelFactory
@@ -62,7 +59,6 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         locationObserver = LocationObserver(mFusedLocationClient)
         checkLocationPermission()
         collectCurrentWeatherDetails()
-        collectForecast()
         binding.swipeLayout.setOnRefreshListener {
             getWeatherResult()
             binding.swipeLayout.isRefreshing = false
@@ -86,26 +82,6 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
                 }
             }
         }
-    }
-
-    private fun collectForecast() {
-//        lifecycleScope.launchWhenResumed {
-//            viewModel.forecastFlow.collect { state ->
-//                when (state) {
-//                    is UIState.Loading -> {
-//                        loading()
-//                    }
-//                    is UIState.Success<*> -> {
-//                        Log.d("Forecast", "${state.data}")
-//                        onForecast(state.data)
-//                    }
-//                    is UIState.Error -> {
-//                        onError(state.exception.message)
-//                    }
-//                    else -> {}
-//                }
-//            }
-//        }
     }
 
     private fun checkLocationPermission() {
@@ -134,13 +110,24 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
 
     private fun getWeatherResult() {
         lifecycle.addObserver(locationObserver)
+        viewModel.getLocation(mFusedLocationClient)
         lifecycleScope.launchWhenResumed {
-            val region = getUserCurrentLocation()
-            region?.let {
-                val lat = it.latitude.roundOff()
-                val long = it.longitude.roundOff()
-                viewModel.getCurrentWeather(Keys.apiKey(), lat, long, 3)
+            viewModel.locationFlow.collect {uiState->
+                when(uiState){
+                    is UIState.Loading -> loading()
+                    is UIState.Success<*> -> onLocationReady(uiState.data as Location)
+                    else -> {}
+                }
             }
+        }
+    }
+
+    override fun onLocationReady(location: Location) {
+        super.onLocationReady(location)
+        val lat =location.latitude.roundOff()
+        val long =location.longitude.roundOff()
+        lifecycleScope.launchWhenResumed {
+            viewModel.getCurrentWeather(Keys.apiKey(), lat, long, 3)
         }
     }
 
@@ -155,8 +142,8 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
                 map[DENIED]?.let { permissionList->
                     // request denied , explain and ask again
                     AlertDialog.Builder(requireContext())
-                        .setTitle("Location Permission")
-                        .setMessage("Permission is required to get your current location")
+                        .setTitle(getString(R.string.location_permission))
+                        .setMessage(getString(R.string.location_rationale))
                         .setCancelable(false)
                         .setPositiveButton("Ask again"){p0, p1 ->
                             permissionHelper.launch(permissionList.toTypedArray())
@@ -185,21 +172,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         startActivity(callGPSSettingIntent)
     }
     @SuppressLint("MissingPermission")
-    suspend fun getUserCurrentLocationObject(): String? {
-        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-        val cancellationTokenSource = CancellationTokenSource().token
-        return suspendCancellableCoroutine { cont ->
-            mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource).addOnSuccessListener { location ->
-                Log.d("Main", "lat $location")
-                if (location != null) {
-                    val locality = getAddressFromLatLng(location)
-                    Log.d("Main2", "lat $location")
-                    cont.resumeWith(Result.success(locality))
-                }
-            }
-        }
-    }
-    @SuppressLint("MissingPermission")
+    @Deprecated("Use onLocationReady")
     suspend fun getUserCurrentLocation(): Location? {
         val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         val cancellationTokenSource = CancellationTokenSource().token
@@ -214,6 +187,8 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
             }
         }
     }
+
+
 
     private fun getAddressFromLatLng(location: Location): String? {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -239,10 +214,11 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         super.onSuccess(data)
         val response = data as? List<WeatherEntity>
         if (response?.isNotEmpty() == true){
-            val wr = response[0]
-            val tempInCelsius = wr.current.tempC
+            val we = response[0]
+            val tempInCelsius = we.current.tempC
             val s = convertTempToScientificReading(tempInCelsius ?: 0.0)
-            setTopViewData(wr, s)
+            setTopViewData(we, s)
+            setUpViewPager(we)
         }
         Log.d("Success", "$response")
     }
@@ -251,7 +227,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         super.onForecast(data)
         val forecast = data as? List<ForecastDayResponse>
         if (forecast != null) {
-            setUpViewPager(forecast)
+
         }
     }
     @SuppressLint("SetTextI18n")
@@ -274,19 +250,18 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
             updateDateTv.text = "Last update: $lastUpdated"
         }
     }
-    private fun setUpViewPager(data: List<ForecastDayResponse>) {
-        val map = data.groupBy { it.forecastId }
+    private fun setUpViewPager(data: WeatherEntity) {
         adapter = ViewPagerAdapter(requireActivity(), 3) { position ->
-
+            val listOfDays = data.forecast?.forecastday
             when (position) {
                 0 -> {
-                    ForecastFragment.newInstance(map[0])
+                    ForecastFragment.newInstance(listOfDays?.get(0)?.hour)
                 }
                 1 -> {
-                    ForecastFragment.newInstance(map[1])
+                    ForecastFragment.newInstance(listOfDays?.get(1)?.hour)
                 }
                 else -> {
-                    ForecastFragment.newInstance(map[2])
+                    ForecastFragment.newInstance(listOfDays?.get(2)?.hour)
                 }
             }
         }

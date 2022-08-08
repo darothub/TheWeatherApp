@@ -5,15 +5,18 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.darothub.theweatherapp.R
+import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Hour
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
 import com.darothub.theweatherapp.core.utils.convertEpochTimeToStringFormat
 import com.darothub.theweatherapp.core.utils.convertTempToScientificReading
+import com.darothub.theweatherapp.core.utils.hide
 import com.darothub.theweatherapp.databinding.CurrentWeatherLayoutBinding
 
 
 class DataViewHolder(private val binding: CurrentWeatherLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bindTo(hour: HourEntity) {
+    fun bindTo(hour: Hour) {
         binding.apply {
+            welcomeTv.hide()
             temp.textSize = 14f
             val s = convertTempToScientificReading(hour.tempC)
             updateDateTv.text = s

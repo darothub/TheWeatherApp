@@ -13,28 +13,23 @@ import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Foreca
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.WeatherResponse
 
 class WeatherDataSource(
-    private val forecastDaydao: ForecastDayDao,
-    private val hourDao: HourDao,
     private val weatherDao: WeatherDao,
-    private val forecastMapper: Mapper<WeatherResponse, List<ForecastDayEntity>>,
-    private val weatherMapper: Mapper<WeatherResponse, WeatherEntity>
 ) {
-    suspend fun insertForecastDay(response: WeatherResponse): List<ForecastDayEntity> {
-        val entities = forecastMapper.toEntity(response)
+//    suspend fun insertForecastDay(response: WeatherResponse): List<ForecastDayEntity> {
+//        val entities = forecastMapper.toEntity(response)
 //        entities.map {
 //            forecastDaydao.insert(it)
 //        }
-        return entities
-    }
-    suspend fun insertCurrent(currentWeather: WeatherResponse){
-       val entity = weatherMapper.toEntity(currentWeather)
-        weatherDao.insert(entity)
+//        return entities
+//    }
+    suspend fun insertCurrent(currentWeather: WeatherEntity){
+        weatherDao.insert(currentWeather)
     }
 
-    suspend fun insertHour(hourEntity: HourEntity){
-        hourDao.insert(hourEntity)
-    }
+//    suspend fun insertHour(hourEntity: HourEntity){
+//        hourDao.insert(hourEntity)
+//    }
     fun getCurrentWeather(lat: String, long: String) = weatherDao.getCurrentWeather(lat, long)
-    fun getCurrentForecast(q:String) = forecastDaydao.getForecast(q)
-    fun getForecastWithHours() = forecastDaydao.getForecastWithHours()
+//    fun getCurrentForecast(q:String) = forecastDaydao.getForecast(q)
+//    fun getForecastWithHours() = forecastDaydao.getForecastWithHours()
 }

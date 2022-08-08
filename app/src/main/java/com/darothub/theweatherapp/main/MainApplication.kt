@@ -22,8 +22,6 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        forecastDayDao = WeatherDatabase(this).forecastDayDao()
-        hourDao = WeatherDatabase(this).hourDao()
         currentDao = WeatherDatabase(this).weatherDao()
     }
     companion object {
@@ -48,13 +46,7 @@ class MainApplication : Application() {
             createDataSource()
         )
 
-        private fun createDataSource() = WeatherDataSource(
-            forecastDayDao,
-            hourDao,
-            currentDao,
-            ForecastDayMapper(),
-            WeatherMapper()
-        )
+        private fun createDataSource() = WeatherDataSource(currentDao)
 
         private fun getRetrofit(): ApiService {
             return Retrofit.Builder()

@@ -1,7 +1,8 @@
-package com.darothub.theweatherapp.com.darothub.theweatherapp.weather.ui
+package com.darothub.theweatherapp.com.darothub.theweatherapp.main
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.Location
 import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
@@ -14,7 +15,7 @@ import com.darothub.theweatherapp.databinding.StateLayoutBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 abstract class BaseFragment(@LayoutRes val layout: Int): Fragment(layout), UIStateListener {
-    private lateinit var uiStateListener: UIStateListener
+    private var uiStateListener: UIStateListener? = null
     lateinit var stateLayoutBinding: StateLayoutBinding
     lateinit var loaderDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,13 +36,12 @@ abstract class BaseFragment(@LayoutRes val layout: Int): Fragment(layout), UISta
     }
     override fun onError(error: String?) {
         stateLayoutBinding.errorTv.text = getString(R.string.error, error)
-        stateLayoutBinding.errorTv.show()
-        stateLayoutBinding.progressBar.hide()
+        setErrorView()
         loaderDialog.show()
     }
 
     override fun loading() {
-        stateLayoutBinding.progressBar.show()
+        setSuccessView()
         loaderDialog.show()
     }
     private fun setupLoaderDialog() {
@@ -52,4 +52,19 @@ abstract class BaseFragment(@LayoutRes val layout: Int): Fragment(layout), UISta
         loaderDialog = builder.create()
         loaderDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
+    private fun setErrorView() {
+        stateLayoutBinding.errorTv.show()
+        stateLayoutBinding.progressBar.hide()
+        stateLayoutBinding.adviceTv.hide()
+    }
+    private fun setSuccessView(){
+        stateLayoutBinding.progressBar.show()
+        stateLayoutBinding.adviceTv.show()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        uiStateListener = null
+    }
+
+    override fun onLocationReady(location: Location) {}
 }

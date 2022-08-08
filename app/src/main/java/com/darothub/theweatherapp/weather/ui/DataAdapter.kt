@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Hour
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
 
 import com.darothub.theweatherapp.databinding.CurrentWeatherLayoutBinding
 
 
 class DataAdapter : RecyclerView.Adapter<DataViewHolder>() {
-    private var dataList: List<HourEntity> = emptyList()
+    private var dataList: List<Hour> = emptyList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
         val binding = CurrentWeatherLayoutBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,7 +25,7 @@ class DataAdapter : RecyclerView.Adapter<DataViewHolder>() {
     }
     override fun getItemCount() = dataList.size
 
-    fun setData(data: List<HourEntity>) {
+    fun setData(data: List<Hour>) {
         val dataDiffUtils = DataDiffUtils(dataList, data)
         val result = DiffUtil.calculateDiff(dataDiffUtils)
         dataList = data.take(5)
@@ -33,8 +34,8 @@ class DataAdapter : RecyclerView.Adapter<DataViewHolder>() {
 }
 
 class DataDiffUtils(
-    private val oldList: List<HourEntity>,
-    private val newList: List<HourEntity>
+    private val oldList: List<Hour>,
+    private val newList: List<Hour>
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
 
