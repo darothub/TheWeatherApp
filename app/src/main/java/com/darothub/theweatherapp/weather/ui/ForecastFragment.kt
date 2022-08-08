@@ -6,9 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.darothub.theweatherapp.R
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Hour
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
-import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.ForecastDayResponse
+import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Hour
 import com.darothub.theweatherapp.core.utils.viewBinding
 import com.darothub.theweatherapp.databinding.FragmentForecastBinding
 

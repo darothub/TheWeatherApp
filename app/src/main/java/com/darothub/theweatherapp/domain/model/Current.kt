@@ -1,11 +1,11 @@
-package com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities
+package com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model
 
 import androidx.room.Embedded
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Condition
 import com.google.gson.annotations.SerializedName
 
 
-data class CurrentWeatherEntity(
+data class Current(
     @SerializedName("last_updated_epoch")
     val lastUpdatedEpoch: Long,
     @SerializedName("last_updated")

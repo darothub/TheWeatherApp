@@ -1,8 +1,8 @@
 package com.darothub.theweatherapp.com.darothub.theweatherapp.domain
 
 import androidx.room.TypeConverter
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Forecast
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Forecastday
+import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Forecast
+import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Forecastday
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type

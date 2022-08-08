@@ -1,8 +1,6 @@
 package com.darothub.theweatherapp.com.darothub.theweatherapp.domain
 
 import android.location.Location
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.WeatherEntity
 
 interface UIStateListener {
     fun <T> onSuccess(data: T)

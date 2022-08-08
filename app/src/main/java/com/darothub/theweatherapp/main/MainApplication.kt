@@ -4,12 +4,7 @@ import android.app.Application
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.api.ApiService
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.api.baseUrl
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.WeatherDatabase
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.CurrentDao
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.ForecastDayDao
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.HourDao
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.database.dao.WeatherDao
-import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.ForecastDayMapper
-import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.WeatherMapper
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.repository.WeatherDataSource
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.repository.WeatherRepositoryImpl
 import com.google.gson.GsonBuilder
@@ -25,8 +20,6 @@ class MainApplication : Application() {
         currentDao = WeatherDatabase(this).weatherDao()
     }
     companion object {
-        lateinit var forecastDayDao: ForecastDayDao
-        lateinit var hourDao: HourDao
         lateinit var currentDao: WeatherDao
         private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
             return HttpLoggingInterceptor().apply {

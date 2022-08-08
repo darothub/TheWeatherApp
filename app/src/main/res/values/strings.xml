@@ -16,4 +16,7 @@
     <string name="auth_failed">Authentication failed</string>
     <string name="location_rationale">Permission is required to get your current location</string>
     <string name="loading">loading...</string>
+    <string name="wind">"Wind: %1$sm/s"</string>
+    <string name="pressure">"Pressure: %1$shPa"</string>
+    <string name="humidity">"Humidity: %1$s%"</string>
 </resources>

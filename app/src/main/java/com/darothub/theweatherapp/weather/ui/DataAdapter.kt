@@ -4,9 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.Hour
-import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.HourEntity
-
+import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.Hour
 import com.darothub.theweatherapp.databinding.CurrentWeatherLayoutBinding
 
 

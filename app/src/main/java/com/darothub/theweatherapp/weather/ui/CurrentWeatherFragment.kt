@@ -22,7 +22,6 @@ import com.darothub.theweatherapp.Keys
 import com.darothub.theweatherapp.R
 import com.darothub.theweatherapp.com.darothub.theweatherapp.core.entities.*
 import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.UIState
-import com.darothub.theweatherapp.com.darothub.theweatherapp.domain.model.ForecastDayResponse
 import com.darothub.theweatherapp.com.darothub.theweatherapp.main.BaseFragment
 import com.darothub.theweatherapp.com.darothub.theweatherapp.main.MainApplication
 import com.darothub.theweatherapp.com.darothub.theweatherapp.weather.viewmodel.WeatherViewModel
@@ -223,13 +222,6 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         Log.d("Success", "$response")
     }
 
-    override fun <T> onForecast(data: T) {
-        super.onForecast(data)
-        val forecast = data as? List<ForecastDayResponse>
-        if (forecast != null) {
-
-        }
-    }
     @SuppressLint("SetTextI18n")
     private fun setTopViewData(
         wr: WeatherEntity,
