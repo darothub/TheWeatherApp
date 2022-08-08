@@ -19,4 +19,6 @@
     <string name="wind">"Wind: %1$sm/s"</string>
     <string name="pressure">"Pressure: %1$shPa"</string>
     <string name="humidity">"Humidity: %1$s%"</string>
+    <string name="biometric">Biometric</string>
+    <string name="biometric_request_advice">You do not have biometric activated on this device. Kindly click ok to enrol</string>
 </resources>

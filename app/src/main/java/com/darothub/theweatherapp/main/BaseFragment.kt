@@ -63,4 +63,5 @@ abstract class BaseFragment(@LayoutRes val layout: Int): Fragment(layout), UISta
     }
 
     override fun onLocationReady(location: Location) {}
+    override fun onRegisterBiometric() {}
 }

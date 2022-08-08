@@ -1,5 +1,6 @@
 package com.darothub.theweatherapp.auth
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -47,9 +48,7 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
                     super.onAuthenticationSucceeded(result)
                     binding.usernameInput.setText(username)
                     onSuccess(true)
-
                 }
-
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
                     onError(getString(R.string.auth_failed))
@@ -74,8 +73,9 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
         }
         binding.btn.setOnClickListener {
             val usernameHere = binding.usernameInput.text.toString()
-            if ( !checkIfDeviceCanAuthenticate(biometricManager)){
-                return@setOnClickListener
+            when(checkIfDeviceCanAuthenticate(biometricManager)){
+                is BiometricState.ReqestEnrollment -> onRegisterBiometric()
+                else -> {}
             }
             if (verifyUserName(usernameHere)) {
                 biometricPrompt.authenticate(promptInfo)
@@ -86,28 +86,20 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
         }
 
     }
-
-    private fun checkIfDeviceCanAuthenticate(biometricManager: BiometricManager):Boolean =
+    private fun checkIfDeviceCanAuthenticate(biometricManager: BiometricManager):BiometricState =
         when (biometricManager.canAuthenticate(BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->{
                 onError("Your device has no biometric feature")
-                false
+                BiometricState.NoHardware
             }
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->{
                 onError("Biometric features are currently unavailable.")
-                false
+                BiometricState.NotAvailable
             }
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                    putExtra(
-                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                        BIOMETRIC_STRONG
-                    )
-                }
-                startActivity(enrollIntent)
-                false
+                BiometricState.ReqestEnrollment
             }
-            else -> true
+            else -> BiometricState.Available
         }
     private fun verifyUserName(username: String): Boolean = when {
         username.isBlank() -> false
@@ -132,4 +124,32 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
         }
     }
 
+    override fun onRegisterBiometric() {
+        super.onRegisterBiometric()
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.biometric))
+            .setMessage(getString(R.string.biometric_request_advice))
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.ok)){p0, p1 ->
+                biometricEnrollment()
+            }.show()
+    }
+
+    private fun biometricEnrollment(){
+        val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+            putExtra(
+                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                BIOMETRIC_STRONG
+            )
+        }
+        startActivity(enrollIntent)
+    }
+
+}
+
+sealed class BiometricState {
+    object NoHardware: BiometricState()
+    object NotAvailable: BiometricState()
+    object ReqestEnrollment: BiometricState()
+    object Available: BiometricState()
 }
