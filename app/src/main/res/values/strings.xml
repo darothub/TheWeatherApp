@@ -11,7 +11,7 @@
     <string name="location">%1$s,\n%2$s</string>
     <string name="error">%1$s\nKindly swipe down to refresh</string>
     <string name="login">Login</string>
-    <string name="username_error">"Username must be at least four characters long"</string>
+    <string name="username_error">"Username must be at least four and not more than 10 characters long"</string>
     <string name="auth_error">Authentication error: %1$s</string>
     <string name="auth_failed">Authentication failed</string>
     <string name="location_rationale">Permission is required to get your current location</string>

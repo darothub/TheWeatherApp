@@ -103,7 +103,7 @@ class AuthenticationFragment : BaseFragment(R.layout.fragment_authentication) {
         }
     private fun verifyUserName(username: String): Boolean = when {
         username.isBlank() -> false
-        username.length < 4 -> false
+        username.length < 4 || username.length > 10 -> false
         else -> true
     }
 
