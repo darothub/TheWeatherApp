@@ -72,7 +72,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
                         loading()
                     }
                     is UIState.Success<*> -> {
-                        onCurrentWeather(state.data)
+                        onWeatherResponse(state.data)
                     }
                     is UIState.Error -> {
                         onError(state.exception.message)
@@ -209,7 +209,7 @@ class CurrentWeatherFragment : BaseFragment(R.layout.fragment_current_weather), 
         return result.toString()
     }
 
-    override fun <T> onCurrentWeather(data: T) {
+    override fun <T> onWeatherResponse(data: T) {
         super.onSuccess(data)
         val response = data as? List<WeatherEntity>
         if (response?.isNotEmpty() == true){

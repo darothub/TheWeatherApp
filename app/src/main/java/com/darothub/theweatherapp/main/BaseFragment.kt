@@ -27,11 +27,7 @@ abstract class BaseFragment(@LayoutRes val layout: Int): Fragment(layout), UISta
         loaderDialog.dismiss()
     }
 
-    override fun <T> onCurrentWeather(data: T) {
-        loaderDialog.dismiss()
-    }
-
-    override fun <T> onForecast(data: T) {
+    override fun <T> onWeatherResponse(data: T) {
         loaderDialog.dismiss()
     }
     override fun onError(error: String?) {
